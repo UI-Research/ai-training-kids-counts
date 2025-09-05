@@ -1,0 +1,4 @@
+
+write_csv(child_pov_pct_cleaned, "toy-data/child-poverty-ar-pct.csv")
+# num = rowSums(across(all_of(paste0(num_vars, "E"))))
+# den = rowSums(across(all_of(paste0(den_vars, "E"))))

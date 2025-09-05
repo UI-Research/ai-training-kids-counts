@@ -1,0 +1,160 @@
+---
+title: "AI Exercises for Kids Count Data Center"
+format: html
+editor: visual
+---
+
+# AI Exercise Session Plan
+
+We will work through 2 interactive exercises using AI tools. If your organization has an approved tool, feel free to use that. Otherwise, a free version of ChatGPT, Gemini, or the like will work great for illustrative purposes. As a disclaimer, these examples were aided themselves by AI tools!
+
+# Exercise 1 - Documentation and Debugging
+
+## Objective
+
+We will start with an R function that is messy and has a bug in it. With assistance, we will clean up the code, add documentation, and fix the bug.
+
+## Instructions
+
+1.  Review the R code snippet below. Run it in your R environment to see what it does at baseline.
+
+2.  There are two bugs in the current function. Draft a prompt to ask your AI tool to rewrite the function to fix the bugs. You can try without telling it the bugs at first to check what it identifies, and then provide hints if needed.
+
+    a.  All of the margin-of-error variables (ending in '\_M') are included in the numerator alongside the estimates (ending in '\_E')
+    b.  the denominator is the wrong universe - it is everyone, not just the \<18 population.
+
+3.  The function is poorly documented. Ask AI to add function docstrings to explain what the function does, its inputs, and its outputs, as well as any clarifying in-line comments that might be necessary to explain assumptions
+
+4.  Review the refined function. Test to ensure it works as expected and note any key differences.
+
+```{r}
+library(tidyverse)
+
+# 1. Read in the toy dataset
+county_child_pov_ar <- read_csv('toy-data/child-poverty-ar.csv')
+
+# 2. Code to get the right list of variables in our numerator and in our denominator
+year <- 2023
+survey <- "acs5"
+vars <- load_variables(year, survey, cache = TRUE)
+  
+
+under18_ages <- "(Under 5 years|5 years|6 to 11 years|12 to 14 years|15 years|16 and 17 years)"
+  
+num_vars <- vars %>%
+  filter(str_detect(name, "^B17001_"),
+           str_detect(label,
+                      paste0("Estimate!!Total:!!Income in the past 12 months below poverty level:!!(Male|Female):!!",
+                             under18_ages))) %>%
+  pull(name)
+  
+den_vars <- vars %>%
+  filter(str_detect(name, "^B17001_"),
+         str_detect(label,
+                    paste0("Estimate!!Total:!!(Income in the past 12 months (below|at or above) poverty level):!!(Male|Female):!!",
+                           under18_ages))) %>%
+    pull(name)
+
+
+# 2. Existing function to compute child poverty percentage by Arkansas census tract
+calculate_child_pov_pct <- function(d) {
+  d %>%
+    transmute(
+      GEOID, NAME,
+      num = rowSums(across(matches(paste0("^(", paste(num_vars, collapse="|"), ")")))), # grab all numerator columns
+      den = B17001_001E # Grab total count for the B17_001 table as denominator
+    ) %>%
+    mutate(child_poverty_rate_pct = 100 * num / den) %>%
+    arrange(desc(child_poverty_rate_pct))
+}
+
+calculate_child_pov_pct(county_child_pov_ar)
+
+
+#' Calculate Child Poverty Percentage from ACS Data
+#'
+#' Calculates child poverty rates (under 18) by summing poverty and total population 
+#' estimates across age/gender categories from ACS table B17001.
+#'
+#' @param d Data frame from get_acs() with output = "wide" containing estimate columns
+#' @return Data frame with GEOID, NAME, num, den, and child_poverty_rate_pct columns
+#' @details Requires num_vars and den_vars to be defined globally
+calculate_child_pov_pct_updated <- function(d) {
+  d %>%
+    transmute(
+      GEOID, NAME,
+      # Sum children in poverty across age/gender categories
+      num = rowSums(across(all_of(paste0(num_vars, "E")))),
+      # Sum total children across age/gender categories
+      den = rowSums(across(all_of(paste0(den_vars, "E"))))
+      ) %>%
+    # Calculate poverty rate as percentage
+    mutate(child_poverty_rate_pct = 100 * num / den)
+}
+child_pov_pct_cleaned <- calculate_child_pov_pct(county_child_pov_ar)
+```
+
+# Exercise 2 - Data Visualization
+
+## Objective
+
+We will ask AI to assist with creating data visualization and iteratively make improvements until we have what we want. \## Instructions 1. We will use the cleaned data from Exercise 1. If you did not complete that, you can read in this updated dataset:
+
+```{r}
+child_poverty_ar_pct <- read_csv('toy-data/child-poverty-ar-pct.csv')
+```
+
+2.  Ask your AI tool to create a bar chart of child poverty rates by county using `ggplot2`
+
+3.  Ask your AI tool to improve chart readability for use in a slide deck. What might we consider asking for?
+
+4.  Ask your tool to generate a caption and short blurb to explain the narrative throughline of the chart for a non-technical audience. Can we evaluate what it generates together?
+
+```{r}
+library(tidyverse)
+library(tigris)
+library(sf)
+
+# Get Arkansas tract geometries
+ar_tracts <- tracts(state = "AR", year = 2023, cb = TRUE)
+
+# Join your poverty data with tract geometries
+poverty_map_data <- ar_tracts %>%
+  left_join(child_pov_pct_cleaned, by = "GEOID") # Replace 'your_poverty_data' with your actual data frame name
+
+# Create the heat map
+# Create the slide-ready heat map
+ggplot(poverty_map_data) +
+  geom_sf(aes(fill = child_poverty_rate_pct), color = "white", size = 0.05) +
+  scale_fill_gradient2(
+    name = "Child Poverty Rate",
+    low = "#f7f7f7", 
+    mid = "#feb24c", 
+    high = "#bd0026",
+    midpoint = 0.20,  # Adjust based on your data range
+    labels = scales::percent_format(accuracy = 1),
+    na.value = "grey95",
+    guide = guide_colorbar(
+      barwidth = 1.5,
+      barheight = 8,
+      title.position = "top",
+      title.hjust = 0.5
+    )
+  ) +
+  labs(
+    title = "Child Poverty Varies Significantly Across Arkansas",
+    subtitle = "Percentage of children under 18 living below poverty line by census tract, 2022"
+  ) +
+  theme_void(base_size = 16) +
+  theme(
+    plot.title = element_text(size = 24, face = "bold", margin = margin(b = 10)),
+    plot.subtitle = element_text(size = 18, color = "grey30", margin = margin(b = 20)),
+    legend.position = "right",
+    legend.title = element_text(size = 14, face = "bold"),
+    legend.text = element_text(size = 12),
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.background = element_rect(fill = "white", color = NA),
+    plot.margin = margin(20, 20, 20, 20)
+  )
+
+```
