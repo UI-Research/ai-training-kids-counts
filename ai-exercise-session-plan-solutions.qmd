@@ -1,7 +1,11 @@
 ---
-title: "AI Exercises for Kids Count Data Center"
-format: html
-editor: visual
+title: "AI Exercises for Kids Count Data Center (Solutions)"
+format:
+  html:
+    embed-resources: true
+    self-contained: true
+execute:
+  echo: true
 ---
 
 # AI Exercise Session Plan
@@ -131,7 +135,7 @@ child_poverty_ar_pct <- read_csv('toy-data/child-poverty-ar-pct.csv')
 
 2.  Ask your AI tool to create a heat map of child poverty rates statewide using `ggplot2.`
 
-3.  Ask your AI tool to improve chart readability for use in a slide deck. What might we consider asking for?
+3.  Ask your AI tool to improve chart readability for use in a slide deck. What might we consider asking for? A prompting tip: Providing context like why you are asking this question, specific changes you want to see, the desired format of your output, and who the target audience is can all be helpful.
 
 4.  Ask your tool to generate a caption and short blurb to explain the narrative throughline of the chart for a non-technical audience. Can we evaluate what it generates together?---------------------------------------------------------------------
 
