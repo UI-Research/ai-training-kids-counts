@@ -22,8 +22,8 @@ We will start with an R function that is messy and has a bug in it. With assista
 
 2.  There are two bugs in the current function. Draft a prompt to ask your AI tool to rewrite the function to fix the bugs. You can try without telling it the bugs at first to check what it identifies, and then provide hints if needed.
 
-    a.  All of the margin-of-error variables (ending in '\_M') are included in the numerator alongside the estimates (ending in '\_E')
-    b.  the denominator is the wrong universe - it is everyone, not just the <18 population..
+    a.  All of the margin-of-error variables (ending in '\_M') are included by default in `tidycensus`. Without logic keeping only the estimates (ending in '\_E') in the numerator, our calculations will be off base.
+    b.  the denominator is the wrong universe - it is currently set to everyone, but it should only be the <18 population.
 
 3.  The function is poorly documented. Ask AI to add function docstrings to explain what the function does, its inputs, and its outputs, as well as any clarifying in-line comments that might be necessary to explain assumptions
 
