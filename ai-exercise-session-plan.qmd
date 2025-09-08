@@ -5,23 +5,39 @@ editor: visual
 ---
 
 # AI Exercise Session Plan
+
 We will work through 2 interactive exercises using AI tools. If your organization has an approved tool, feel free to use that. Otherwise, a free version of ChatGPT, Gemini, or the like will work great for illustrative purposes. As a disclaimer, these examples were aided themselves by AI tools!
+
+This toy example deals with American Community Survey data on child poverty and showcases the usefulness of AI for catching mistakes, cleaning up messy code, and doing some preliminary data visualization.
+
+# Setup / prerequisites
+
+-   R \>= 4.0
+
+-   Install packages if needed:
+
+`install.packages(c("tidyverse", "tidycensus", "tigris", "sf", "viridis", "scales"))`
+
+Note: In general, you need a Census API key for tidycensus::get_acs(); for this workshop we use the toy CSV so the key is optional!
 
 # Exercise 1 - Documentation and Debugging
 
 ## Objective
+
 We will start with an R function that is messy and has a bug in it. With assistance, we will clean up the code, add documentation, and fix the bug.
 
 ## Instructions
-1. Review the R code snippet below. Run it in your R environment to see what it does at baseline.
 
-2. There are two bugs in the current function. Draft a prompt to ask your AI tool to rewrite the function to fix the bugs. You can try without telling it the bugs at first to check what it identifies, and then provide hints if needed.
-    a. All of the margin-of-error variables (ending in '_M') are included in the numerator alongside the estimates (ending in '_E')
-    b. the denominator is the wrong universe - it is everyone, not just the <18 population.
+1.  Review the R code snippet below. Run it in your R environment to see what it does at baseline. Also `View()` the dataset you've imported to see what it looks like.
 
-3. The function is poorly documented. Ask AI to add function docstrings to explain what the function does, its inputs, and its outputs, as well as any clarifying in-line comments that might be necessary to explain assumptions
+2.  There are two intentional bugs in the current function. Draft a prompt to ask your AI tool to rewrite the function to fix the bugs. You can try without telling it the bugs at first to check what it identifies, and then provide hints if needed.
 
-4. Review the refined function. Test to ensure it works as expected and note any key differences.
+    a.  All of the margin-of-error variables (ending in '\_M') are included in the numerator alongside the estimates (ending in '\_E')
+    b.  the denominator is the wrong universe - it is everyone, not just the \<18 population.
+
+3.  The function is poorly documented. Ask AI to add function docstrings to explain what the function does, its inputs, and its outputs, as well as any clarifying in-line comments that might be necessary to explain assumptions
+
+4.  Review the refined function. Test to ensure it works as expected and note any key differences.
 
 ```{r}
 library(tidyverse)
@@ -44,13 +60,9 @@ num_vars <- vars %>%
                       paste0("Estimate!!Total:!!Income in the past 12 months below poverty level:!!(Male|Female):!!",
                              under18_ages))) %>%
   pull(name)
-  
-den_vars <- vars %>%
-  filter(str_detect(name, "^B17001_"),
-         str_detect(label,
-                    paste0("Estimate!!Total:!!(Income in the past 12 months (below|at or above) poverty level):!!(Male|Female):!!",
-                           under18_ages))) %>%
-    pull(name)
+ 
+# Note: denominator variable selection (den_vars) is intentionally omitted here in the example
+# The corrected den_vars selection appears in the solutions notebook where the fix is shown.
 
 
 # 2. Existing function to compute child poverty percentage by Arkansas census tract
@@ -58,7 +70,7 @@ calculate_child_pov_pct <- function(d) {
   d %>%
     transmute(
       GEOID, NAME,
-      num = rowSums(across(matches(paste0("^(", paste(num_vars, collapse="|"), ")")))), # grab all numerator columns
+      num = rowSums(across(matches(paste0("^(\\", paste(num_vars, collapse="|"), ")")))), # grab all numerator columns
       den = B17001_001E # Grab total count for the B17_001 table as denominator
     ) %>%
     mutate(child_poverty_rate_pct = 100 * num / den) %>%
@@ -69,17 +81,17 @@ calculate_child_pov_pct(county_child_pov_ar)
 ```
 
 # Exercise 2 - Data Visualization
+
 ## Objective
-We will ask AI to assist with creating data visualization and iteratively make improvements until we have what we want.
-## Instructions
-1. We will use the cleaned data from Exercise 1. If you did not complete that, you can read in this updated dataset:
+
+We will ask AI to assist with creating data visualization and iteratively make improvements until we have what we want. \## Instructions 1. We will use the cleaned data from Exercise 1. If you did not complete that, you can read in this updated dataset:
+
 ```{r}
 child_poverty_ar_pct <- read_csv('toy-data/child-poverty-ar-pct.csv')
 ```
 
-2. Ask your AI tool to create a bar chart of child poverty rates by county using `ggplot2`
+2.  Ask your AI tool to create a heat map of child poverty rates statewide using `ggplot2.`
 
-3. Ask your AI tool to improve chart readability for use in a slide deck. What might we consider asking for?
+3.  Ask your AI tool to improve chart readability for use in a slide deck. What might we consider asking for?
 
-4. Ask your tool to generate a caption and short blurb to explain the narrative throughline of the chart for a non-technical audience. Can we evaluate what it generates together?
-
+4.  Ask your tool to generate a caption and short blurb to explain the narrative throughline of the chart for a non-technical audience. Can we evaluate what it generates together?

@@ -8,6 +8,8 @@ editor: visual
 
 We will work through 2 interactive exercises using AI tools. If your organization has an approved tool, feel free to use that. Otherwise, a free version of ChatGPT, Gemini, or the like will work great for illustrative purposes. As a disclaimer, these examples were aided themselves by AI tools!
 
+This toy example deals with American Community Survey data on child poverty and showcases the usefulness of AI for catching mistakes, cleaning up messy code, and doing some preliminary data visualization.
+
 # Exercise 1 - Documentation and Debugging
 
 ## Objective
@@ -21,7 +23,7 @@ We will start with an R function that is messy and has a bug in it. With assista
 2.  There are two bugs in the current function. Draft a prompt to ask your AI tool to rewrite the function to fix the bugs. You can try without telling it the bugs at first to check what it identifies, and then provide hints if needed.
 
     a.  All of the margin-of-error variables (ending in '\_M') are included in the numerator alongside the estimates (ending in '\_E')
-    b.  the denominator is the wrong universe - it is everyone, not just the \<18 population.
+    b.  the denominator is the wrong universe - it is everyone, not just the <18 population..
 
 3.  The function is poorly documented. Ask AI to add function docstrings to explain what the function does, its inputs, and its outputs, as well as any clarifying in-line comments that might be necessary to explain assumptions
 
@@ -29,6 +31,7 @@ We will start with an R function that is messy and has a bug in it. With assista
 
 ```{r}
 library(tidyverse)
+library(tidycensus)
 
 # 1. Read in the toy dataset
 county_child_pov_ar <- read_csv('toy-data/child-poverty-ar.csv')
@@ -47,13 +50,8 @@ num_vars <- vars %>%
                       paste0("Estimate!!Total:!!Income in the past 12 months below poverty level:!!(Male|Female):!!",
                              under18_ages))) %>%
   pull(name)
-  
-den_vars <- vars %>%
-  filter(str_detect(name, "^B17001_"),
-         str_detect(label,
-                    paste0("Estimate!!Total:!!(Income in the past 12 months (below|at or above) poverty level):!!(Male|Female):!!",
-                           under18_ages))) %>%
-    pull(name)
+ 
+# NOTE: den_vars calculation moved to SOLUTION section to keep the example intentionally buggy
 
 
 # 2. Existing function to compute child poverty percentage by Arkansas census tract
@@ -61,7 +59,7 @@ calculate_child_pov_pct <- function(d) {
   d %>%
     transmute(
       GEOID, NAME,
-      num = rowSums(across(matches(paste0("^(", paste(num_vars, collapse="|"), ")")))), # grab all numerator columns
+      num = rowSums(across(matches(paste0("^(\\", paste(num_vars, collapse="|"), ")")))), # grab all numerator columns
       den = B17001_001E # Grab total count for the B17_001 table as denominator
     ) %>%
     mutate(child_poverty_rate_pct = 100 * num / den) %>%
@@ -69,92 +67,116 @@ calculate_child_pov_pct <- function(d) {
 }
 
 calculate_child_pov_pct(county_child_pov_ar)
+```
 
+---
 
-#' Calculate Child Poverty Percentage from ACS Data
-#'
-#' Calculates child poverty rates (under 18) by summing poverty and total population 
-#' estimates across age/gender categories from ACS table B17001.
-#'
-#' @param d Data frame from get_acs() with output = "wide" containing estimate columns
-#' @return Data frame with GEOID, NAME, num, den, and child_poverty_rate_pct columns
-#' @details Requires num_vars and den_vars to be defined globally
-calculate_child_pov_pct_updated <- function(d) {
+### SOLUTION (reference)
+
+The full solution and sample prompts live in this notebook. The corrected function below (minimal, with comments) fixes the two issues: it sums only estimate columns (excludes _M) and uses the under‑18 estimate columns as the denominator. A short sample AI prompt is provided after the code.
+
+```{r}
+# Prepare denominator variable list
+den_vars <- vars %>%
+  filter(str_detect(name, "^B17001_"),
+         str_detect(label,
+                    paste0("Estimate!!Total:!!(Income in the past 12 months (below|at or above) poverty level):!!(Male|Female):!!",
+                           under18_ages))) %>%
+    pull(name)
+
+# Solution: corrected, minimal function
+#' Calculate child poverty percent (under-18)
+#' d: data.frame with ACS wide columns like B17001_XXXE
+#' num_codes, den_codes: vectors of B17001 codes (no E/M suffix)
+calculate_child_pov_pct_solution <- function(d, num_codes, den_codes) {
+  num_cols <- paste0(num_codes, "E")
+  den_cols <- paste0(den_codes, "E")
+
+  num_present <- intersect(num_cols, names(d))
+  den_present <- intersect(den_cols, names(d))
+
   d %>%
     transmute(
       GEOID, NAME,
-      # Sum children in poverty across age/gender categories
-      num = rowSums(across(all_of(paste0(num_vars, "E")))),
-      # Sum total children across age/gender categories
-      den = rowSums(across(all_of(paste0(den_vars, "E"))))
-      ) %>%
-    # Calculate poverty rate as percentage
-    mutate(child_poverty_rate_pct = 100 * num / den)
+      num = if (length(num_present) > 0) rowSums(across(all_of(num_present)), na.rm = TRUE) else 0,
+      den = if (length(den_present) > 0) rowSums(across(all_of(den_present)), na.rm = TRUE) else 0
+    ) %>%
+    mutate(child_poverty_rate_pct = if_else(den > 0, 100 * num / den, NA_real_))
 }
-child_pov_pct_cleaned <- calculate_child_pov_pct(county_child_pov_ar)
+
+# Run the solution on the toy data
+child_pov_pct_solution <- calculate_child_pov_pct_solution(county_child_pov_ar, num_vars, den_vars)
+child_pov_pct_solution %>% slice_max(child_poverty_rate_pct, n = 6)
 ```
+
+Sample AI prompt (pasteable):"
+
+"Fix the function: use estimate (E) columns only; use <18 population as denominator; handle divide-by-zero; add docstring."
+
+---
 
 # Exercise 2 - Data Visualization
 
 ## Objective
 
-We will ask AI to assist with creating data visualization and iteratively make improvements until we have what we want. \## Instructions 1. We will use the cleaned data from Exercise 1. If you did not complete that, you can read in this updated dataset:
+We will ask AI to assist with creating data visualization and iteratively make improvements until we have what we want. 
+
+## Instructions:
+
+1. We will use the cleaned data from Exercise 1. If you did not complete that, you can read in this updated dataset:
 
 ```{r}
 child_poverty_ar_pct <- read_csv('toy-data/child-poverty-ar-pct.csv')
 ```
 
-2.  Ask your AI tool to create a bar chart of child poverty rates by county using `ggplot2`
+2.  Ask your AI tool to create a heat map of child poverty rates statewide using `ggplot2.`
 
 3.  Ask your AI tool to improve chart readability for use in a slide deck. What might we consider asking for?
 
-4.  Ask your tool to generate a caption and short blurb to explain the narrative throughline of the chart for a non-technical audience. Can we evaluate what it generates together?
+4.  Ask your tool to generate a caption and short blurb to explain the narrative throughline of the chart for a non-technical audience. Can we evaluate what it generates together?---------------------------------------------------------------------
+
+---
+
+### SOLUTION (reference)
+
+Below is a compact, slide-ready mapping solution. It uses a colorblind-safe palette and a county-level fallback for speed. The code saves a PNG suitable for slides.
 
 ```{r}
 library(tidyverse)
 library(tigris)
 library(sf)
+library(viridis)
+library(scales)
+options(tigris_use_cache = TRUE)
 
 # Get Arkansas tract geometries
 ar_tracts <- tracts(state = "AR", year = 2023, cb = TRUE)
 
-# Join your poverty data with tract geometries
+# Join the cleaned poverty data from Exercise 1 solution
 poverty_map_data <- ar_tracts %>%
-  left_join(child_pov_pct_cleaned, by = "GEOID") # Replace 'your_poverty_data' with your actual data frame name
+  left_join(child_pov_pct_solution %>% select(GEOID, child_poverty_rate_pct, den), by = "GEOID")
 
-# Create the heat map
-# Create the slide-ready heat map
-ggplot(poverty_map_data) +
-  geom_sf(aes(fill = child_poverty_rate_pct), color = "white", size = 0.05) +
-  scale_fill_gradient2(
-    name = "Child Poverty Rate",
-    low = "#f7f7f7", 
-    mid = "#feb24c", 
-    high = "#bd0026",
-    midpoint = 0.20,  # Adjust based on your data range
-    labels = scales::percent_format(accuracy = 1),
-    na.value = "grey95",
-    guide = guide_colorbar(
-      barwidth = 1.5,
-      barheight = 8,
-      title.position = "top",
-      title.hjust = 0.5
-    )
-  ) +
-  labs(
-    title = "Child Poverty Varies Significantly Across Arkansas",
-    subtitle = "Percentage of children under 18 living below poverty line by census tract, 2022"
-  ) +
-  theme_void(base_size = 16) +
-  theme(
-    plot.title = element_text(size = 24, face = "bold", margin = margin(b = 10)),
-    plot.subtitle = element_text(size = 18, color = "grey30", margin = margin(b = 20)),
-    legend.position = "right",
-    legend.title = element_text(size = 14, face = "bold"),
-    legend.text = element_text(size = 12),
-    panel.background = element_rect(fill = "white", color = NA),
-    plot.background = element_rect(fill = "white", color = NA),
-    plot.margin = margin(20, 20, 20, 20)
-  )
+# County-level aggregation (fast and slide-friendly)
+county_map_data <- poverty_map_data %>%
+  mutate(county_geoid = substr(GEOID, 1, 5)) %>%
+  group_by(county_geoid) %>%
+  summarize(child_poverty_rate_pct = weighted.mean(child_poverty_rate_pct, w = den, na.rm = TRUE), geometry = st_union(geometry), .groups = "drop")
 
+p_county_solution <- ggplot(county_map_data) +
+  geom_sf(aes(fill = child_poverty_rate_pct), color = "white", size = 0.2) +
+  scale_fill_viridis_c(option = "magma", na.value = "grey90", labels = percent_format(accuracy = 1)) +
+  labs(title = "Child Poverty by County — Arkansas", subtitle = "Weighted average of tract rates (denominator-weighted)", caption = "Toy data; replace with ACS for real results") +
+  theme_void(base_size = 14) + theme(legend.position = "right", plot.title = element_text(face = "bold"))
+
+# Save slide-ready image
+ggsave("toy-data/child_poverty_county_slide_solution.png", p_county_solution, width = 10, height = 7, dpi = 300)
+
+# Print preview
+p_county_solution
 ```
+
+Suggested prompt for visualization refinement (pasteable):
+
+"Write R code to generate from this dataset a slide-ready county map of child poverty rates and save a PNG."
+
+---

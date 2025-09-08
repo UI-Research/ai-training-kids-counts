@@ -57,16 +57,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="ai-exercise-session-plan_files/libs/clipboard/clipboard.min.js"></script>
-<script src="ai-exercise-session-plan_files/libs/quarto-html/quarto.js"></script>
-<script src="ai-exercise-session-plan_files/libs/quarto-html/popper.min.js"></script>
-<script src="ai-exercise-session-plan_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="ai-exercise-session-plan_files/libs/quarto-html/anchor.min.js"></script>
-<link href="ai-exercise-session-plan_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="ai-exercise-session-plan_files/libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="ai-exercise-session-plan_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="ai-exercise-session-plan_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="ai-exercise-session-plan_files/libs/bootstrap/bootstrap-973236bd072d72a04ee9cd82dcc9cb29.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="ai-exercise-session-plan-solutions_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ai-exercise-session-plan-solutions_files/libs/quarto-html/quarto.js"></script>
+<script src="ai-exercise-session-plan-solutions_files/libs/quarto-html/popper.min.js"></script>
+<script src="ai-exercise-session-plan-solutions_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="ai-exercise-session-plan-solutions_files/libs/quarto-html/anchor.min.js"></script>
+<link href="ai-exercise-session-plan-solutions_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ai-exercise-session-plan-solutions_files/libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ai-exercise-session-plan-solutions_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="ai-exercise-session-plan-solutions_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="ai-exercise-session-plan-solutions_files/libs/bootstrap/bootstrap-973236bd072d72a04ee9cd82dcc9cb29.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -101,15 +101,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>We will work through 2 interactive exercises using AI tools. If your organization has an approved tool, feel free to use that. Otherwise, a free version of ChatGPT, Gemini, or the like will work great for illustrative purposes. As a disclaimer, these examples were aided themselves by AI tools!</p>
 <p>This toy example deals with American Community Survey data on child poverty and showcases the usefulness of AI for catching mistakes, cleaning up messy code, and doing some preliminary data visualization.</p>
 </section>
-<section id="setup-prerequisites" class="level1">
-<h1>Setup / prerequisites</h1>
-<ul>
-<li><p>R &gt;= 4.0</p></li>
-<li><p>Install packages if needed:</p></li>
-</ul>
-<p><code>install.packages(c("tidyverse", "tidycensus", "tigris", "sf", "viridis", "scales"))</code></p>
-<p>Note: In general, you need a Census API key for tidycensus::get_acs(); for this workshop we use the toy CSV so the key is optional!</p>
-</section>
 <section id="exercise-1---documentation-and-debugging" class="level1">
 <h1>Exercise 1 - Documentation and Debugging</h1>
 <section id="objective" class="level2">
@@ -119,11 +110,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="instructions" class="level2">
 <h2 class="anchored" data-anchor-id="instructions">Instructions</h2>
 <ol type="1">
-<li><p>Review the R code snippet below. Run it in your R environment to see what it does at baseline. Also <code>View()</code> the dataset you’ve imported to see what it looks like.</p></li>
-<li><p>There are two intentional bugs in the current function. Draft a prompt to ask your AI tool to rewrite the function to fix the bugs. You can try without telling it the bugs at first to check what it identifies, and then provide hints if needed.</p>
+<li><p>Review the R code snippet below. Run it in your R environment to see what it does at baseline.</p></li>
+<li><p>There are two bugs in the current function. Draft a prompt to ask your AI tool to rewrite the function to fix the bugs. You can try without telling it the bugs at first to check what it identifies, and then provide hints if needed.</p>
 <ol type="a">
 <li>All of the margin-of-error variables (ending in ‘_M’) are included in the numerator alongside the estimates (ending in ‘_E’)</li>
-<li>the denominator is the wrong universe - it is everyone, not just the &lt;18 population.</li>
+<li>the denominator is the wrong universe - it is everyone, not just the &lt;18 population..</li>
 </ol></li>
 <li><p>The function is poorly documented. Ask AI to add function docstrings to explain what the function does, its inputs, and its outputs, as well as any clarifying in-line comments that might be necessary to explain assumptions</p></li>
 <li><p>Review the refined function. Test to ensure it works as expected and note any key differences.</p></li>
@@ -171,23 +162,22 @@ dbl (118): B17001_001E, B17001_001M, B17001_002E, B17001_002M, B17001_003E, ...
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                             under18_ages))) <span class="sc">%&gt;%</span></span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(name)</span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: denominator variable selection (den_vars) is intentionally omitted here in the example</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># The corrected den_vars selection appears in the solutions notebook where the fix is shown.</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: den_vars calculation moved to SOLUTION section to keep the example intentionally buggy</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Existing function to compute child poverty percentage by Arkansas census tract</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>calculate_child_pov_pct <span class="ot">&lt;-</span> <span class="cf">function</span>(d) {</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">transmute</span>(</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>      GEOID, NAME,</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">num =</span> <span class="fu">rowSums</span>(<span class="fu">across</span>(<span class="fu">matches</span>(<span class="fu">paste0</span>(<span class="st">"^(</span><span class="sc">\\</span><span class="st">"</span>, <span class="fu">paste</span>(num_vars, <span class="at">collapse=</span><span class="st">"|"</span>), <span class="st">")"</span>)))), <span class="co"># grab all numerator columns</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">den =</span> B17001_001E <span class="co"># Grab total count for the B17_001 table as denominator</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">child_poverty_rate_pct =</span> <span class="dv">100</span> <span class="sc">*</span> num <span class="sc">/</span> den) <span class="sc">%&gt;%</span></span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="fu">desc</span>(child_poverty_rate_pct))</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_child_pov_pct</span>(county_child_pov_ar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Existing function to compute child poverty percentage by Arkansas census tract</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>calculate_child_pov_pct <span class="ot">&lt;-</span> <span class="cf">function</span>(d) {</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">transmute</span>(</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>      GEOID, NAME,</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">num =</span> <span class="fu">rowSums</span>(<span class="fu">across</span>(<span class="fu">matches</span>(<span class="fu">paste0</span>(<span class="st">"^(</span><span class="sc">\\</span><span class="st">"</span>, <span class="fu">paste</span>(num_vars, <span class="at">collapse=</span><span class="st">"|"</span>), <span class="st">")"</span>)))), <span class="co"># grab all numerator columns</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">den =</span> B17001_001E <span class="co"># Grab total count for the B17_001 table as denominator</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">child_poverty_rate_pct =</span> <span class="dv">100</span> <span class="sc">*</span> num <span class="sc">/</span> den) <span class="sc">%&gt;%</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="fu">desc</span>(child_poverty_rate_pct))</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_child_pov_pct</span>(county_child_pov_ar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 823 × 5
    GEOID       NAME                             num   den child_poverty_rate_pct
@@ -205,15 +195,73 @@ dbl (118): B17001_001E, B17001_001M, B17001_002E, B17001_002M, B17001_003E, ...
 # ℹ 813 more rows</code></pre>
 </div>
 </div>
+<hr>
+<section id="solution-reference" class="level3">
+<h3 class="anchored" data-anchor-id="solution-reference">SOLUTION (reference)</h3>
+<p>The full solution and sample prompts live in this notebook. The corrected function below (minimal, with comments) fixes the two issues: it sums only estimate columns (excludes _M) and uses the under‑18 estimate columns as the denominator. A short sample AI prompt is provided after the code.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare denominator variable list</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>den_vars <span class="ot">&lt;-</span> vars <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(name, <span class="st">"^B17001_"</span>),</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>         <span class="fu">str_detect</span>(label,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">paste0</span>(<span class="st">"Estimate!!Total:!!(Income in the past 12 months (below|at or above) poverty level):!!(Male|Female):!!"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                           under18_ages))) <span class="sc">%&gt;%</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(name)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Solution: corrected, minimal function</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#' Calculate child poverty percent (under-18)</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#' d: data.frame with ACS wide columns like B17001_XXXE</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#' num_codes, den_codes: vectors of B17001 codes (no E/M suffix)</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>calculate_child_pov_pct_solution <span class="ot">&lt;-</span> <span class="cf">function</span>(d, num_codes, den_codes) {</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  num_cols <span class="ot">&lt;-</span> <span class="fu">paste0</span>(num_codes, <span class="st">"E"</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  den_cols <span class="ot">&lt;-</span> <span class="fu">paste0</span>(den_codes, <span class="st">"E"</span>)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  num_present <span class="ot">&lt;-</span> <span class="fu">intersect</span>(num_cols, <span class="fu">names</span>(d))</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  den_present <span class="ot">&lt;-</span> <span class="fu">intersect</span>(den_cols, <span class="fu">names</span>(d))</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">transmute</span>(</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>      GEOID, NAME,</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">num =</span> <span class="cf">if</span> (<span class="fu">length</span>(num_present) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="fu">rowSums</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(num_present)), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="cf">else</span> <span class="dv">0</span>,</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">den =</span> <span class="cf">if</span> (<span class="fu">length</span>(den_present) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="fu">rowSums</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(den_present)), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">child_poverty_rate_pct =</span> <span class="fu">if_else</span>(den <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="dv">100</span> <span class="sc">*</span> num <span class="sc">/</span> den, <span class="cn">NA_real_</span>))</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the solution on the toy data</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>child_pov_pct_solution <span class="ot">&lt;-</span> <span class="fu">calculate_child_pov_pct_solution</span>(county_child_pov_ar, num_vars, den_vars)</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>child_pov_pct_solution <span class="sc">%&gt;%</span> <span class="fu">slice_max</span>(child_poverty_rate_pct, <span class="at">n =</span> <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  GEOID       NAME                              num   den child_poverty_rate_pct
+  &lt;chr&gt;       &lt;chr&gt;                           &lt;dbl&gt; &lt;dbl&gt;                  &lt;dbl&gt;
+1 05093010100 Census Tract 101; Mississippi …   330   350                   94.3
+2 05119980400 Census Tract 9804; Pulaski Cou…   107   116                   92.2
+3 05041950300 Census Tract 9503; Desha Count…   185   219                   84.5
+4 05027950500 Census Tract 9505; Columbia Co…   864  1029                   84.0
+5 05107480500 Census Tract 4805; Phillips Co…   369   447                   82.6
+6 05119002800 Census Tract 28; Pulaski Count…   518   632                   82.0</code></pre>
+</div>
+</div>
+<p>Sample AI prompt (pasteable):”</p>
+<p>“Fix the function: use estimate (E) columns only; use &lt;18 population as denominator; handle divide-by-zero; add docstring.”</p>
+<hr>
+</section>
 </section>
 </section>
 <section id="exercise-2---data-visualization" class="level1">
 <h1>Exercise 2 - Data Visualization</h1>
 <section id="objective-1" class="level2">
 <h2 class="anchored" data-anchor-id="objective-1">Objective</h2>
-<p>We will ask AI to assist with creating data visualization and iteratively make improvements until we have what we want. ## Instructions 1. We will use the cleaned data from Exercise 1. If you did not complete that, you can read in this updated dataset:</p>
+<p>We will ask AI to assist with creating data visualization and iteratively make improvements until we have what we want.</p>
+</section>
+<section id="instructions-1" class="level2">
+<h2 class="anchored" data-anchor-id="instructions-1">Instructions:</h2>
+<ol type="1">
+<li>We will use the cleaned data from Exercise 1. If you did not complete that, you can read in this updated dataset:</li>
+</ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>child_poverty_ar_pct <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'toy-data/child-poverty-ar-pct.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>child_poverty_ar_pct <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'toy-data/child-poverty-ar-pct.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 823 Columns: 5
 ── Column specification ────────────────────────────────────────────────────────
@@ -228,8 +276,85 @@ dbl (3): num, den, child_poverty_rate_pct
 <ol start="2" type="1">
 <li><p>Ask your AI tool to create a heat map of child poverty rates statewide using <code>ggplot2.</code></p></li>
 <li><p>Ask your AI tool to improve chart readability for use in a slide deck. What might we consider asking for?</p></li>
-<li><p>Ask your tool to generate a caption and short blurb to explain the narrative throughline of the chart for a non-technical audience. Can we evaluate what it generates together?</p></li>
+<li><p>Ask your tool to generate a caption and short blurb to explain the narrative throughline of the chart for a non-technical audience. Can we evaluate what it generates together?———————————————————————</p></li>
 </ol>
+<hr>
+<section id="solution-reference-1" class="level3">
+<h3 class="anchored" data-anchor-id="solution-reference-1">SOLUTION (reference)</h3>
+<p>Below is a compact, slide-ready mapping solution. It uses a colorblind-safe palette and a county-level fallback for speed. The code saves a PNG suitable for slides.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tigris)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>To enable caching of data, set `options(tigris_use_cache = TRUE)`
+in your R script or .Rprofile.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(viridis)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: viridisLite</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'scales'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:viridis':
+
+    viridis_pal</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:purrr':
+
+    discard</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:readr':
+
+    col_factor</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">tigris_use_cache =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Get Arkansas tract geometries</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>ar_tracts <span class="ot">&lt;-</span> <span class="fu">tracts</span>(<span class="at">state =</span> <span class="st">"AR"</span>, <span class="at">year =</span> <span class="dv">2023</span>, <span class="at">cb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Join the cleaned poverty data from Exercise 1 solution</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>poverty_map_data <span class="ot">&lt;-</span> ar_tracts <span class="sc">%&gt;%</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(child_pov_pct_solution <span class="sc">%&gt;%</span> <span class="fu">select</span>(GEOID, child_poverty_rate_pct, den), <span class="at">by =</span> <span class="st">"GEOID"</span>)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="co"># County-level aggregation (fast and slide-friendly)</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>county_map_data <span class="ot">&lt;-</span> poverty_map_data <span class="sc">%&gt;%</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">county_geoid =</span> <span class="fu">substr</span>(GEOID, <span class="dv">1</span>, <span class="dv">5</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(county_geoid) <span class="sc">%&gt;%</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">child_poverty_rate_pct =</span> <span class="fu">weighted.mean</span>(child_poverty_rate_pct, <span class="at">w =</span> den, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">geometry =</span> <span class="fu">st_union</span>(geometry), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>p_county_solution <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(county_map_data) <span class="sc">+</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> child_poverty_rate_pct), <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">size =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">"magma"</span>, <span class="at">na.value =</span> <span class="st">"grey90"</span>, <span class="at">labels =</span> <span class="fu">percent_format</span>(<span class="at">accuracy =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Child Poverty by County — Arkansas"</span>, <span class="at">subtitle =</span> <span class="st">"Weighted average of tract rates (denominator-weighted)"</span>, <span class="at">caption =</span> <span class="st">"Toy data; replace with ACS for real results"</span>) <span class="sc">+</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>, <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Save slide-ready image</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"toy-data/child_poverty_county_slide_solution.png"</span>, p_county_solution, <span class="at">width =</span> <span class="dv">10</span>, <span class="at">height =</span> <span class="dv">7</span>, <span class="at">dpi =</span> <span class="dv">300</span>)</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Print preview</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>p_county_solution</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ai-exercise-session-plan-solutions_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Suggested prompt for visualization refinement (pasteable):</p>
+<p>“Write R code to generate from this dataset a slide-ready county map of child poverty rates and save a PNG.”</p>
+<hr>
+</section>
 </section>
 </section>
 
