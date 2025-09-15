@@ -1,0 +1,51 @@
+GEOID,NAME,state,children_in_poverty,total_children_under18,child_poverty_rate_pct
+01001,Autauga County,Alabama,2451,13729,17.8
+01003,Baldwin County,Alabama,7234,53421,13.5
+01005,Barbour County,Alabama,1876,6012,31.2
+01007,Bibb County,Alabama,1245,4987,25.0
+01009,Blount County,Alabama,3987,14532,27.4
+01011,Bullock County,Alabama,876,2134,41.1
+01013,Butler County,Alabama,1654,4567,36.2
+01015,Calhoun County,Alabama,7832,27891,28.1
+01017,Chambers County,Alabama,2134,7456,28.6
+01019,Cherokee County,Alabama,1987,6234,31.9
+04001,Apache County,Arizona,8745,19834,44.1
+04003,Cochise County,Arizona,3456,28745,12.0
+04005,Coconino County,Arizona,4567,35678,12.8
+04007,Gila County,Arizona,2134,12456,17.1
+04009,Graham County,Arizona,1234,9876,12.5
+04011,Greenlee County,Arizona,345,2134,16.2
+04013,La Paz County,Arizona,876,4321,20.3
+04015,Maricopa County,Arizona,98765,1234567,8.0
+04017,Mohave County,Arizona,7654,45678,16.8
+04019,Navajo County,Arizona,5432,23456,23.2
+06001,Alameda County,California,54321,398765,13.6
+06003,Alpine County,California,123,987,12.5
+06005,Amador County,California,987,8765,11.3
+06007,Butte County,California,8765,54321,16.1
+06009,Calaveras County,California,1234,12345,10.0
+06011,Colusa County,California,876,5432,16.1
+06013,Contra Costa County,California,23456,287654,8.2
+06015,Del Norte County,California,987,6543,15.1
+06017,El Dorado County,California,4321,43210,10.0
+06019,Fresno County,California,65432,287654,22.7
+08001,Adams County,Colorado,12345,123456,10.0
+08003,Alamosa County,Colorado,876,4321,20.3
+08005,Arapahoe County,Colorado,23456,156789,15.0
+08007,Archuleta County,Colorado,345,2876,12.0
+08009,Baca County,Colorado,234,1876,12.5
+08011,Bent County,Colorado,432,2134,20.2
+08013,Boulder County,Colorado,8765,87654,10.0
+08014,Broomfield County,Colorado,1234,15678,7.9
+08015,Chaffee County,Colorado,567,4321,13.1
+08017,Cheyenne County,Colorado,123,987,12.5
+12001,Alachua County,Florida,8765,54321,16.1
+12003,Baker County,Florida,876,6543,13.4
+12005,Bay County,Florida,6543,43210,15.1
+12007,Bradford County,Florida,1234,7654,16.1
+12009,Brevard County,Florida,23456,156789,15.0
+12011,Broward County,Florida,87654,543210,16.1
+12013,Calhoun County,Florida,567,3456,16.4
+12015,Charlotte County,Florida,5432,43210,12.6
+12017,Citrus County,Florida,4321,34567,12.5
+12019,Clay County,Florida,6543,54321,12.0

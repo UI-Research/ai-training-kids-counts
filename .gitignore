@@ -62,3 +62,7 @@ Thumbs.db
 
 # Temporary files
 *~
+
+# Generated output files from exercises (keep only in toy-data if needed for demos)
+**/child_poverty_county*.png
+**/test_plot*.png

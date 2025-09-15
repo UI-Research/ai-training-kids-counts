@@ -184,3 +184,191 @@ Suggested prompt for visualization refinement (pasteable):
 "Write R code to generate from this dataset a slide-ready county map of child poverty rates and save a PNG."
 
 ---
+
+# NEW EXAMPLE (reference) — SOLUTION
+
+## County-Level Child Poverty Analysis with Human+AI Workflow
+
+**Estimated time:** 20 minutes  
+**Packages needed:** R: `tidyverse`, `scales`; Python: `pandas`, `matplotlib`, `seaborn`  
+**Quick run:** R: `knitr::purl("ai-exercise-new-example.qmd")` then `source("ai-exercise-new-example.R")`; Python: `jupyter nbconvert --execute ai-exercise-new-example.ipynb`  
+
+### Overview
+
+This example demonstrates a complete human+AI workflow for county-level child poverty analysis. Unlike the existing Arkansas tract-level example, this focuses on:
+- Multi-state county-level data 
+- Explicit human+AI collaboration steps
+- Copy-paste prompts for efficiency
+- Iterative improvement workflow
+
+### Data Description
+
+The toy dataset (`toy-data/child-poverty-county.csv`) contains:
+- 50 counties across Alabama, Arizona, California, Colorado, Florida
+- County-level child poverty counts and rates
+- GEOID, NAME, state, children_in_poverty, total_children_under18, child_poverty_rate_pct
+
+### Solution Code (R)
+
+```{r solution_r}
+library(tidyverse)
+library(scales)
+
+# Load data
+child_poverty <- read_csv('toy-data/child-poverty-county.csv')
+
+# Data validation
+child_poverty_validated <- child_poverty %>%
+  mutate(
+    computed_poverty_rate = round(100 * children_in_poverty / total_children_under18, 1),
+    rate_difference = abs(child_poverty_rate_pct - computed_poverty_rate)
+  )
+
+# Top 10 counties table
+top_counties <- child_poverty %>%
+  arrange(desc(child_poverty_rate_pct)) %>%
+  head(10) %>%
+  select(NAME, state, children_in_poverty, total_children_under18, child_poverty_rate_pct)
+
+# Final slide-ready visualization  
+poverty_plot_final <- child_poverty %>%
+  arrange(desc(child_poverty_rate_pct)) %>%
+  head(10) %>%
+  mutate(
+    county_state = paste0(NAME, ", ", state),
+    county_state = fct_reorder(county_state, child_poverty_rate_pct),
+    severity = case_when(
+      child_poverty_rate_pct >= 35 ~ "Very High (35%+)",
+      child_poverty_rate_pct >= 25 ~ "High (25-34%)",
+      child_poverty_rate_pct >= 15 ~ "Moderate (15-24%)",
+      TRUE ~ "Low (<15%)"
+    )
+  ) %>%
+  ggplot(aes(x = child_poverty_rate_pct, y = county_state, fill = severity)) +
+  geom_col(alpha = 0.9) +
+  geom_text(aes(label = paste0(child_poverty_rate_pct, "%")), 
+            hjust = -0.1, size = 3.5, fontface = "bold") +
+  scale_fill_manual(
+    values = c("Very High (35%+)" = "#d73027", 
+               "High (25-34%)" = "#fc8d59",
+               "Moderate (15-24%)" = "#fee08b",
+               "Low (<15%)" = "#d9ef8b"),
+    name = "Poverty Level"
+  ) +
+  scale_x_continuous(labels = percent_format(scale = 1), 
+                     expand = expansion(mult = c(0, 0.15))) +
+  labs(
+    title = "Child Poverty Crisis: Counties with Highest Rates",
+    subtitle = "Over 40% of children live in poverty in some counties",
+    x = "Child Poverty Rate",
+    y = NULL,
+    caption = "Data: Simulated county-level estimates for training purposes\nNote: Real analysis should use American Community Survey data"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 12, color = "gray40"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    legend.position = "bottom"
+  )
+
+# Save final plot
+ggsave("toy-data/child_poverty_county_final.png", poverty_plot_final, 
+       width = 12, height = 8, dpi = 300)
+
+print("R solution completed successfully!")
+```
+
+### Solution Code (Python)
+
+```{python solution_python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Load data
+child_poverty = pd.read_csv('toy-data/child-poverty-county.csv')
+
+# Data validation
+child_poverty['computed_poverty_rate'] = np.round(
+    100 * child_poverty['children_in_poverty'] / child_poverty['total_children_under18'], 1
+)
+
+# Top 10 counties
+top_counties = child_poverty.nlargest(10, 'child_poverty_rate_pct')
+
+# Final visualization
+plt.figure(figsize=(12, 8))
+plot_data = child_poverty.nlargest(10, 'child_poverty_rate_pct').copy()
+plot_data['county_state'] = plot_data['NAME'] + ', ' + plot_data['state']
+plot_data = plot_data.sort_values('child_poverty_rate_pct')
+
+# Color coding
+def categorize_severity(rate):
+    if rate >= 35: return 'Very High (35%+)'
+    elif rate >= 25: return 'High (25-34%)'
+    elif rate >= 15: return 'Moderate (15-24%)'
+    else: return 'Low (<15%)'
+
+plot_data['severity'] = plot_data['child_poverty_rate_pct'].apply(categorize_severity)
+color_map = {'Very High (35%+)': '#d73027', 'High (25-34%)': '#fc8d59', 
+             'Moderate (15-24%)': '#fee08b', 'Low (<15%)': '#d9ef8b'}
+
+colors = [color_map[severity] for severity in plot_data['severity']]
+bars = plt.barh(plot_data['county_state'], plot_data['child_poverty_rate_pct'], 
+                color=colors, alpha=0.9)
+
+# Labels and formatting
+for i, (bar, value) in enumerate(zip(bars, plot_data['child_poverty_rate_pct'])):
+    plt.text(bar.get_width() + 1, bar.get_y() + bar.get_height()/2, 
+             f'{value}%', ha='left', va='center', fontweight='bold')
+
+plt.xlabel('Child Poverty Rate')
+plt.title('Child Poverty Crisis: Counties with Highest Rates', fontsize=16, fontweight='bold')
+plt.savefig('toy-data/child_poverty_county_python_final.png', dpi=300, bbox_inches='tight')
+print("Python solution completed successfully!")
+```
+
+### Human+AI Workflow Prompts (Copy-Paste Ready)
+
+**Step 1: Data Exploration**
+```
+Explore toy-data/child-poverty-county.csv and summarize the data structure, key variables, and any data quality issues.
+```
+
+**Step 2: Compute Indicators**
+```
+Compute county child poverty rate, show top 10 counties, and validate calculations match the provided rates.
+```
+
+**Step 3: Basic Visualization**
+```
+Create a bar chart of top 10 counties by child poverty rate and save as toy-data/child_poverty_county.png.
+```
+
+**Step 4: Improve Visualization**
+```
+Improve legend and caption for slides.
+```
+
+**Verification Prompts:**
+```
+List the columns you used and any assumptions.
+What are the limitations of this analysis and what caveats should I mention?
+What could be wrong with this analysis approach?
+```
+
+### Expected Outputs
+- **Table:** Top 10 counties with poverty rates 25-44%
+- **PNG files:** Both basic and improved visualizations
+- **Validation:** Computed rates should match provided rates within 0.1%
+
+### Acceptance Test
+1. Both R and Python notebooks run without internet/API keys
+2. Generate identical PNG outputs showing top 10 counties
+3. Exercise completes in ~20 minutes
+4. Human+AI workflow steps are clear and actionable
+5. Risks & Uncertainty section provides specific verification guidance
+
+---
