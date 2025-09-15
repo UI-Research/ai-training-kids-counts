@@ -1,0 +1,250 @@
+---
+title: "NEW EXAMPLE: County-Level Child Poverty Analysis with AI"
+format:
+  html:
+    embed-resources: true
+    self-contained: true
+execute:
+  echo: true
+---
+
+# NEW EXAMPLE: County-Level Child Poverty Analysis
+
+**Estimated time:** 20 minutes  
+**Packages needed:** `tidyverse`, `ggplot2`, `dplyr`, `scales`  
+**Quick run:** Open in RStudio, run all chunks with Ctrl+Alt+R  
+
+## Human+AI Workflow Overview
+
+This exercise demonstrates a complete human+AI data analysis workflow for county-level child poverty data. You'll work step-by-step with an AI assistant to load, analyze, and visualize the data.
+
+## Setup
+
+```{r setup}
+library(tidyverse)
+library(scales)
+
+# Read the dataset
+child_poverty <- read_csv('toy-data/child-poverty-county.csv')
+```
+
+## Human+AI Workflow Steps
+
+### Step 1: Data Exploration and Setup
+
+**Your role:** Ask AI to help you explore and understand the dataset.
+
+**Barebones prompt (copy-paste):**
+```
+Explore toy-data/child-poverty-county.csv and summarize the data structure, key variables, and any data quality issues.
+```
+
+**Expanded prompt:**
+```
+Load and explore the child poverty county dataset. Please provide a summary of the data structure, describe what each column represents, identify any missing values or outliers, and suggest what analysis might be appropriate for this data.
+```
+
+**Expected AI guidance:** AI should identify the GEOID, NAME, state, children_in_poverty, total_children_under18, and child_poverty_rate_pct columns and suggest county-level analysis.
+
+```{r exploration}
+# Explore the data structure
+glimpse(child_poverty)
+summary(child_poverty)
+
+# Check for missing values
+child_poverty %>% 
+  summarise(across(everything(), ~sum(is.na(.))))
+
+# Preview top and bottom counties by poverty rate
+child_poverty %>% 
+  arrange(desc(child_poverty_rate_pct)) %>% 
+  head(10)
+```
+
+### Step 2: Ask AI to Compute and Validate Indicators
+
+**Your role:** Ask AI to compute additional indicators and validate the data.
+
+**Barebones prompt (copy-paste):**
+```
+Compute county child poverty rate, show top 10 counties, and validate calculations match the provided rates.
+```
+
+**Expanded prompt:**
+```
+Using the child poverty dataset, compute the child poverty rate from the raw counts and compare it to the provided rate column. Show the top 10 counties with highest poverty rates and verify our calculations are correct.
+```
+
+```{r compute_indicators}
+# Compute poverty rate and validate
+child_poverty_validated <- child_poverty %>%
+  mutate(
+    computed_poverty_rate = round(100 * children_in_poverty / total_children_under18, 1),
+    rate_difference = abs(child_poverty_rate_pct - computed_poverty_rate)
+  )
+
+# Check validation
+child_poverty_validated %>%
+  filter(rate_difference > 0.1) %>%
+  select(NAME, state, child_poverty_rate_pct, computed_poverty_rate, rate_difference)
+
+# Show top 10 counties
+top_poverty_counties <- child_poverty_validated %>%
+  arrange(desc(child_poverty_rate_pct)) %>%
+  head(10) %>%
+  select(NAME, state, children_in_poverty, total_children_under18, child_poverty_rate_pct)
+
+print(top_poverty_counties)
+```
+
+### Step 3: Ask AI to Create Visualization
+
+**Your role:** Ask AI to create a clear, slide-ready visualization.
+
+**Barebones prompt (copy-paste):**
+```
+Create a bar chart of top 10 counties by child poverty rate and save as toy-data/child_poverty_county.png.
+```
+
+**Expanded prompt:**
+```
+Create a horizontal bar chart showing the top 10 counties with highest child poverty rates. Make it slide-ready with clear labels, appropriate colors, and save as a PNG file suitable for presentations.
+```
+
+```{r visualization}
+# Create slide-ready visualization
+poverty_plot <- child_poverty %>%
+  arrange(desc(child_poverty_rate_pct)) %>%
+  head(10) %>%
+  mutate(
+    county_state = paste0(NAME, ", ", state),
+    county_state = fct_reorder(county_state, child_poverty_rate_pct)
+  ) %>%
+  ggplot(aes(x = child_poverty_rate_pct, y = county_state)) +
+  geom_col(fill = "steelblue", alpha = 0.8) +
+  geom_text(aes(label = paste0(child_poverty_rate_pct, "%")), 
+            hjust = -0.1, size = 3) +
+  scale_x_continuous(labels = percent_format(scale = 1), 
+                     expand = expansion(mult = c(0, 0.1))) +
+  labs(
+    title = "Counties with Highest Child Poverty Rates",
+    subtitle = "Top 10 counties across multiple states",
+    x = "Child Poverty Rate (%)",
+    y = NULL,
+    caption = "Source: Toy dataset for demonstration purposes"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
+# Display plot
+print(poverty_plot)
+
+# Save plot
+ggsave("toy-data/child_poverty_county.png", poverty_plot, 
+       width = 10, height = 6, dpi = 300)
+```
+
+### Step 4: Ask AI to Improve and Iterate
+
+**Your role:** Ask AI to refine the analysis and visualization based on your needs.
+
+**Barebones prompt (copy-paste):**
+```
+Improve legend and caption for slides.
+```
+
+**Expanded prompt:**
+```
+Improve the chart for a policy presentation. Add better formatting, consider color accessibility, and provide talking points about what the data shows for child welfare advocates.
+```
+
+```{r improve_visualization}
+# Improved version with better accessibility and formatting
+poverty_plot_improved <- child_poverty %>%
+  arrange(desc(child_poverty_rate_pct)) %>%
+  head(10) %>%
+  mutate(
+    county_state = paste0(NAME, ", ", state),
+    county_state = fct_reorder(county_state, child_poverty_rate_pct),
+    # Add color coding for severity
+    severity = case_when(
+      child_poverty_rate_pct >= 35 ~ "Very High (35%+)",
+      child_poverty_rate_pct >= 25 ~ "High (25-34%)",
+      child_poverty_rate_pct >= 15 ~ "Moderate (15-24%)",
+      TRUE ~ "Low (<15%)"
+    )
+  ) %>%
+  ggplot(aes(x = child_poverty_rate_pct, y = county_state, fill = severity)) +
+  geom_col(alpha = 0.9) +
+  geom_text(aes(label = paste0(child_poverty_rate_pct, "%")), 
+            hjust = -0.1, size = 3.5, fontface = "bold") +
+  scale_fill_manual(
+    values = c("Very High (35%+)" = "#d73027", 
+               "High (25-34%)" = "#fc8d59",
+               "Moderate (15-24%)" = "#fee08b",
+               "Low (<15%)" = "#d9ef8b"),
+    name = "Poverty Level"
+  ) +
+  scale_x_continuous(labels = percent_format(scale = 1), 
+                     expand = expansion(mult = c(0, 0.15))) +
+  labs(
+    title = "Child Poverty Crisis: Counties with Highest Rates",
+    subtitle = "Over 40% of children live in poverty in some counties",
+    x = "Child Poverty Rate",
+    y = NULL,
+    caption = "Data: Simulated county-level estimates for training purposes\nNote: Real analysis should use American Community Survey data"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 12, color = "gray40"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    legend.position = "bottom"
+  )
+
+print(poverty_plot_improved)
+
+# Save improved version
+ggsave("toy-data/child_poverty_county_improved.png", poverty_plot_improved, 
+       width = 12, height = 8, dpi = 300)
+```
+
+## Risks & Uncertainty
+
+When working with AI on data analysis, always consider:
+
+### Data Currency and Quality
+- **Ask AI:** "List the columns you used and any assumptions you made about the data."
+- **Verify:** Check data sources, collection dates, and methodology
+- **Reality check:** These are toy numbers - real analysis requires current ACS data
+
+### Statistical Limitations  
+- **Ask AI:** "What are the limitations of this analysis and what caveats should I mention?"
+- **Consider:** Margin of error, sample sizes, and confidence intervals
+- **Small sample warning:** Some counties may have unreliable estimates due to small populations
+
+### AI Analysis Limitations
+- **Ask AI:** "What could be wrong with this analysis approach?"
+- **Verify:** Cross-check AI suggestions against domain knowledge
+- **Human judgment:** AI cannot interpret policy implications or recommend actions
+
+### Recommended Verification Steps
+1. **Column verification:** Always ask AI to report which specific columns it used
+2. **Calculation check:** Verify that computed rates match provided rates  
+3. **Outlier investigation:** Ask AI to flag and explain any unusual values
+4. **Missing data:** Confirm how AI handled any missing or zero values
+
+## Summary
+
+This workflow demonstrates how humans and AI can collaborate effectively on data analysis:
+- **Human provides context** and domain knowledge
+- **AI handles technical implementation** and suggests improvements  
+- **Human validates results** and makes final decisions
+- **Both iterate together** to refine analysis and presentation
+
+The key is maintaining human oversight while leveraging AI's speed and technical capabilities.
